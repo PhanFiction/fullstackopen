@@ -1,21 +1,29 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Filter from './components/Filter.js';
 import PersonForm from './components/PersonForm.js';
 import Person from './components/Person.js';
-
 import './App.css';
+import axios from 'axios';
+
 
 function App() {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-5323523', id: 1},
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2},
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3},
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4},
-  ]);
-
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [newNum, setNum] = useState('');
   const [filter, setFilter] = useState('');
+
+  // renders the components body first before useEffect function takes place
+  useEffect(()=>{
+    // get promise from the server 
+    // which returns a object representing the eventual completion
+    axios
+      .get('http://localhost:3001/persons')
+      // add event handler which is a call back function that would take in the obj inside promise
+      .then((result)=>{ 
+        //setPerson to obj.data and ignore the other data such as header and content type
+        setPersons(result.data); // if change in state, re-renders the whole component
+      })
+  }, []);
 
   // add name to phonebook
   const addName = (event) => {
@@ -53,8 +61,8 @@ function App() {
     setFilter(event.target.value);
   }
 
-  const filterList = persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()));
-
+  const filterNames = persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()));
+  
   return (
     <div>
       <h2>Phonebook</h2>
@@ -63,9 +71,19 @@ function App() {
       <PersonForm submitTo={addName} setValue={newName} handleChange={setName} setValue2={newNum}
       handleChange2={setNumbers}/>
       <h3>Numbers</h3>
-      <Person personList={filterList}/>
+      <Person personList={filterNames}/>
     </div>
   );
 }
 
 export default App;
+
+/*
+1. #0
+2. #
+information of existing cal works case press 2
+information of existing cal fresh case press 3
+information of existing medical case press 4
+information  of existing general existance case press 5
+if you are calling about ssn ssi or medical or plan d press 6
+*/
