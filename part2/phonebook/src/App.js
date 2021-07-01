@@ -3,7 +3,7 @@ import Filter from './components/Filter.js';
 import PersonForm from './components/PersonForm.js';
 import Person from './components/Person.js';
 import './App.css';
-import axios from 'axios';
+import phoneService from './services/phonebook.js';
 
 
 function App() {
@@ -14,6 +14,12 @@ function App() {
 
   // renders the components body first before useEffect function takes place
   useEffect(()=>{
+    phoneService
+      .getAll()
+      .then(result => {
+        setPersons(result);
+      })
+    /*
     // get promise from the server 
     // which returns a object representing the eventual completion
     axios
@@ -23,6 +29,7 @@ function App() {
         //setPerson to obj.data and ignore the other data such as header and content type
         setPersons(result.data); // if change in state, re-renders the whole component
       })
+      */
   }, []);
 
   // add name to phonebook
@@ -39,14 +46,17 @@ function App() {
     const nameObj = {
       name: newName,
       number: newNum,
-      id: persons.length + 1,
     }
 
-    // create new array to store person
-    setPersons([...persons, nameObj]);
-    //setPersons(persons.concat(nameObj)); //alternative
-    setNewName('');
-    setNum('');
+    phoneService
+      .create(nameObj)
+      .then(returnedData => {
+        // create new array to store person
+        setPersons([...persons, nameObj]);
+        //setPersons(persons.concat(nameObj)); //alternative
+        setNewName('');
+        setNum('');
+      })
   }
 
   const setName = (event) => {
@@ -77,13 +87,3 @@ function App() {
 }
 
 export default App;
-
-/*
-1. #0
-2. #
-information of existing cal works case press 2
-information of existing cal fresh case press 3
-information of existing medical case press 4
-information  of existing general existance case press 5
-if you are calling about ssn ssi or medical or plan d press 6
-*/
