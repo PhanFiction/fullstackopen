@@ -19,17 +19,6 @@ function App() {
       .then(result => {
         setPersons(result);
       })
-    /*
-    // get promise from the server 
-    // which returns a object representing the eventual completion
-    axios
-      .get('http://localhost:3001/persons')
-      // add event handler which is a call back function that would take in the obj inside promise
-      .then((result)=>{ 
-        //setPerson to obj.data and ignore the other data such as header and content type
-        setPersons(result.data); // if change in state, re-renders the whole component
-      })
-      */
   }, []);
 
   // add name to phonebook
@@ -38,25 +27,41 @@ function App() {
 
     const nameList = persons.map(person => person.name);
 
-    if(nameList.includes(newName))
-    {
-      window.alert(`${newName} is already in the phonebook`); // template string `${}`
-    }
-    
     const nameObj = {
       name: newName,
       number: newNum,
     }
 
-    phoneService
-      .create(nameObj)
-      .then(returnedData => {
-        // create new array to store person
-        setPersons([...persons, nameObj]);
-        //setPersons(persons.concat(nameObj)); //alternative
-        setNewName('');
-        setNum('');
+    if(nameList.includes(newName))
+    {
+      const updateInfo = window.confirm(`${newName} is already in the phonebook. Would you like to replace the old number with a new one`); // template string `${}`
+
+      if(updateInfo === true)
+      {
+        const personID = persons.find(person => person.name === newName);
+
+        phoneService
+          .update(personID.id, nameObj)
+          .then(returnedData => {
+            setPersons(persons);
+            setNewName('');
+            setNum('');
+          })
+          .catch(error => {
+            console.log(error);
+          })
+      }
+    }else{
+    // create new person
+      phoneService
+        .create(nameObj)
+        .then(returnedData => {
+          setPersons([...persons, returnedData]);
+          //setPersons(persons.concat(returnedData));
+          setNewName('');
+          setNum('');
       })
+    }
   }
 
   const setName = (event) => {
@@ -71,6 +76,25 @@ function App() {
     setFilter(event.target.value);
   }
 
+
+  const deleteName = (e) => {
+    const result = window.confirm(`delete ${e.name}`);
+    //const updateBook = persons.filter(person => person.id !== e.id);
+
+    if(result === true)
+    {
+      phoneService
+        .deleteName(e.id)
+        .then(response => {
+          alert(`${e.name} has been deleted`)
+          setPersons(persons.filter(person => person.id !== e.id));
+        })
+        .catch(error => {
+          window.confirm(`error`)
+        })
+    }
+  }
+
   const filterNames = persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()));
   
   return (
@@ -81,7 +105,7 @@ function App() {
       <PersonForm submitTo={addName} setValue={newName} handleChange={setName} setValue2={newNum}
       handleChange2={setNumbers}/>
       <h3>Numbers</h3>
-      <Person personList={filterNames}/>
+      <Person personList={filterNames} deleteButton={deleteName}/>
     </div>
   );
 }

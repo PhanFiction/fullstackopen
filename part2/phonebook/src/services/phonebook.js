@@ -12,4 +12,14 @@ const create = (newItem) => {
     return request.then(response => response.data);
 }
 
-export default {getAll, create};
+const update = (id, newObj) => {
+    const request = axios.put(`${url}/${id}`, newObj);
+    return request.then(result => result.data);
+}
+
+const deleteName = (id) => {
+    const request = axios.delete(`${url}/${id}`)
+    return request.then(response => response.data);
+}
+
+export default {getAll, create, update, deleteName};
