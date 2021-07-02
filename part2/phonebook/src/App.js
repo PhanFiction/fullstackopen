@@ -4,6 +4,7 @@ import PersonForm from './components/PersonForm.js';
 import Person from './components/Person.js';
 import './App.css';
 import phoneService from './services/phonebook.js';
+import Notification from './components/Notification.js';
 
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
   const [newName, setNewName] = useState('');
   const [newNum, setNum] = useState('');
   const [filter, setFilter] = useState('');
+  const [notification, setNotification] = useState(null);
 
   // renders the components body first before useEffect function takes place
   useEffect(()=>{
@@ -46,13 +48,17 @@ function App() {
             setPersons(persons);
             setNewName('');
             setNum('');
+            setNotification(`Added ${personID.name}`)
+            setTimeout(() => {
+              setNotification(null);
+            }, 5000);
           })
           .catch(error => {
             console.log(error);
           })
       }
     }else{
-    // create new person
+      //create new person
       phoneService
         .create(nameObj)
         .then(returnedData => {
@@ -60,6 +66,10 @@ function App() {
           //setPersons(persons.concat(returnedData));
           setNewName('');
           setNum('');
+          setNotification(`Created ${nameObj.name}`)
+          setTimeout(() => {
+            setNotification(null);
+          }, 5000);
       })
     }
   }
@@ -86,11 +96,17 @@ function App() {
       phoneService
         .deleteName(e.id)
         .then(response => {
-          alert(`${e.name} has been deleted`)
           setPersons(persons.filter(person => person.id !== e.id));
+          setNotification(`Deleted ${e.name}`)
+          setTimeout(() => {
+            setNotification(null);
+          }, 5000);
         })
         .catch(error => {
-          window.confirm(`error`)
+          setNotification(`information of ${e.name} has already been removed from the server`);
+          setTimeout(() => {
+            setNotification(null);
+          }, 5000);
         })
     }
   }
@@ -100,6 +116,7 @@ function App() {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notification}/>
       <Filter value={filter} setFilter={setFilt}/>
       <h3> Add a new</h3>
       <PersonForm submitTo={addName} setValue={newName} handleChange={setName} setValue2={newNum}
