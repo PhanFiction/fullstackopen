@@ -5,8 +5,8 @@ export default function Person({personList, deleteButton})
 {
     return(
         <div>
-            {
-            personList.map(person => 
+            {personList === null? <></>:
+             personList.map(person => 
                 <p key={person.id}> 
                     {person.name} {person.number} 
                         <button className="deleteButton" onClick={()=>{deleteButton(person)}}> 

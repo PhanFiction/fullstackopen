@@ -23,15 +23,18 @@ function App() {
       })
   }, []);
 
-  // add name to phonebook
+  /**
+   * 
+   * @param {*} event 
+   * create http request to update the phonebook to contain new Username and number
+   */
   const addName = (event) => {
     event.preventDefault();
-
     const nameList = persons.map(person => person.name);
 
     const nameObj = {
       name: newName,
-      number: newNum,
+      number: newNum
     }
 
     if(nameList.includes(newName))
@@ -62,7 +65,7 @@ function App() {
       phoneService
         .create(nameObj)
         .then(returnedData => {
-          setPersons([...persons, returnedData]);
+          setPersons([returnedData]);
           //setPersons(persons.concat(returnedData));
           setNewName('');
           setNum('');
@@ -74,20 +77,40 @@ function App() {
     }
   }
 
+  /**
+   * 
+   * @param {*} event
+   * set name of the user  
+   */
   const setName = (event) => {
-    setNewName(event.target.value);
+    setNewName(event.target.value.toLowerCase());
   }
 
+  /**
+   * 
+   * @param {} event
+   * set's the phone-number 
+   */
   const setNumbers = (event) => {
     setNum(event.target.value);
   }
 
+  /**
+   * 
+   * @param {*} event 
+   * filter the name 
+  */
   const setFilt = (event) => {
-    setFilter(event.target.value);
+    setFilter(event.target.value.toLowerCase());
   }
 
 
-  const deleteName = (e) => {
+  /**
+   * 
+   * @param {*} e 
+   * deleete the name and phone-number from the phonebook
+   */
+  const deletePerson = (e) => {
     const result = window.confirm(`delete ${e.name}`);
     //const updateBook = persons.filter(person => person.id !== e.id);
 
@@ -111,8 +134,9 @@ function App() {
     }
   }
 
-  const filterNames = persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()));
-  
+  const filterNames = filter.length === 0? persons.filter(person => person.name) :persons.filter(person => person.name.includes(filter.toLowerCase()));
+
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -122,7 +146,7 @@ function App() {
       <PersonForm submitTo={addName} setValue={newName} handleChange={setName} setValue2={newNum}
       handleChange2={setNumbers}/>
       <h3>Numbers</h3>
-      <Person personList={filterNames} deleteButton={deleteName}/>
+      <Person personList={filterNames} deleteButton={deletePerson}/>
     </div>
   );
 }
