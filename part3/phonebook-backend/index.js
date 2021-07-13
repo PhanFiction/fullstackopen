@@ -29,15 +29,7 @@ let phonebook = [
     }
 ]
 
-/**
- * .use allows us to bind to middleware apps (which can be used to handle request and response objects)
-  1.Execute any code.
-  2.Make changes to the request and the response objects.
-  3.End the request-response cycle.
-  4.Call the next middleware function in the stack.
- */
-
-app.use(express.json()); // the express.json() is a middleware 
+app.use(express.json()); 
 
 morgan.token('postBody',(req, res) => {
   return JSON.stringify(req.body);
@@ -127,7 +119,6 @@ const unknownEndpoint = (request, response) => {
 }
 
 app.use(unknownEndpoint)
-
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

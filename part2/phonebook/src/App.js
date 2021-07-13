@@ -13,6 +13,7 @@ function App() {
   const [newNum, setNum] = useState('');
   const [filter, setFilter] = useState('');
   const [notification, setNotification] = useState(null);
+  const [filterPeople, setFilteredPeople] = useState([]);
 
   // renders the components body first before useEffect function takes place
   useEffect(()=>{
@@ -22,6 +23,7 @@ function App() {
         setPersons(result);
       })
   }, []);
+  console.log('render');
 
   /**
    * 
@@ -51,7 +53,7 @@ function App() {
             setPersons(persons);
             setNewName('');
             setNum('');
-            setNotification(`Added ${personID.name}`)
+            setNotification(`Added ${personID.name}`);
             setTimeout(() => {
               setNotification(null);
             }, 5000);
@@ -65,11 +67,11 @@ function App() {
       phoneService
         .create(nameObj)
         .then(returnedData => {
-          setPersons([returnedData]);
+          setPersons([...returnedData]);
           //setPersons(persons.concat(returnedData));
           setNewName('');
           setNum('');
-          setNotification(`Created ${nameObj.name}`)
+          setNotification(`Created ${nameObj.name}`);
           setTimeout(() => {
             setNotification(null);
           }, 5000);
@@ -83,7 +85,7 @@ function App() {
    * set name of the user  
    */
   const setName = (event) => {
-    setNewName(event.target.value.toLowerCase());
+    setNewName(event.target.value);
   }
 
   /**
@@ -102,6 +104,7 @@ function App() {
   */
   const setFilt = (event) => {
     setFilter(event.target.value.toLowerCase());
+    setFilteredPeople(persons.filter(person => person.name.toLowerCase().includes(filter)));
   }
 
 
@@ -134,20 +137,32 @@ function App() {
     }
   }
 
-  const filterNames = filter.length === 0? persons.filter(person => person.name) :persons.filter(person => person.name.includes(filter.toLowerCase()));
-
-
   return (
-    <div>
-      <h2>Phonebook</h2>
-      <Notification message={notification}/>
-      <Filter value={filter} setFilter={setFilt}/>
-      <h3> Add a new</h3>
-      <PersonForm submitTo={addName} setValue={newName} handleChange={setName} setValue2={newNum}
-      handleChange2={setNumbers}/>
-      <h3>Numbers</h3>
-      <Person personList={filterNames} deleteButton={deletePerson}/>
+    <>
+    <div className="adding-contacts">
+      <div className="header-wrapper">
+          <h1>Phonebook</h1>
+          <PersonForm submitTo={addName} setValue={newName} handleChange={setName} setValue2={newNum} 
+            handleChange2={setNumbers}/>
+      </div>
     </div>
+
+    <div className="phonebook-container">
+      <div className="wrapper">
+        <div className="searchBox">
+          <Notification message={notification}/>
+          <Filter value={filter} setFilter={setFilt}/>
+        </div>
+        <h2 id="info">List of Name and Numbers</h2>
+        {
+          filter === '' ? 
+            <Person personList={persons}deleteButton={deletePerson}/>
+            : 
+            <Person personList={filterPeople} deleteButton={deletePerson}/>
+        }
+      </div>
+    </div>
+    </>
   );
 }
 

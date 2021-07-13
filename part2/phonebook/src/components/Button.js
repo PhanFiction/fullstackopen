@@ -3,8 +3,8 @@ import React from 'react';
 export default function Button()
 {
     return(
-    <div>
-        <button type="submit">add</button>
-    </div> 
+    <>
+        <button type="submit">Add New Contact</button>
+    </> 
     );
 }

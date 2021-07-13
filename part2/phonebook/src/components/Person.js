@@ -3,12 +3,14 @@ import './styles/button.css';
 
 export default function Person({personList, deleteButton})
 {
+    const people = personList.filter(person => person.name);
     return(
         <div>
-            {personList === null? <></>:
-             personList.map(person => 
+            {
+             people.map(person => 
                 <p key={person.id}> 
-                    {person.name} {person.number} 
+                    Name: {person.name + ';    Phone Number: '} 
+                    {person.number} 
                         <button className="deleteButton" onClick={()=>{deleteButton(person)}}> 
                             delete 
                         </button>
