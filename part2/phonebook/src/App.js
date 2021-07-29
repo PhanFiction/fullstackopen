@@ -23,10 +23,8 @@ function App() {
         setPersons(result);
       })
   }, []);
-  console.log('render');
 
   /**
-   * 
    * @param {*} event 
    * create http request to update the phonebook to contain new Username and number
    */
@@ -46,14 +44,13 @@ function App() {
       if(updateInfo === true)
       {
         const personID = persons.find(person => person.name === newName);
-
         phoneService
           .update(personID.id, nameObj)
           .then(returnedData => {
-            setPersons(persons);
+            setPersons(persons.filter(person => person.id !== returnedData.id).concat(returnedData));
             setNewName('');
             setNum('');
-            setNotification(`Added ${personID.name}`);
+            setNotification(`Updated ${personID.name}`);
             setTimeout(() => {
               setNotification(null);
             }, 5000);
@@ -67,8 +64,8 @@ function App() {
       phoneService
         .create(nameObj)
         .then(returnedData => {
-          setPersons([...returnedData]);
-          //setPersons(persons.concat(returnedData));
+          //setPersons([persons, ...returnedData]);
+          setPersons(persons.concat(returnedData));
           setNewName('');
           setNum('');
           setNotification(`Created ${nameObj.name}`);
@@ -76,11 +73,17 @@ function App() {
             setNotification(null);
           }, 5000);
       })
+      .catch(error => {
+        setNotification(error.response.data.error) 
+        setTimeout(() => {
+          setNotification(null);
+        }, 5000);
+      });
     }
   }
 
+
   /**
-   * 
    * @param {*} event
    * set name of the user  
    */
@@ -88,8 +91,8 @@ function App() {
     setNewName(event.target.value);
   }
 
+
   /**
-   * 
    * @param {} event
    * set's the phone-number 
    */
@@ -98,7 +101,6 @@ function App() {
   }
 
   /**
-   * 
    * @param {*} event 
    * filter the name 
   */
@@ -109,7 +111,6 @@ function App() {
 
 
   /**
-   * 
    * @param {*} e 
    * deleete the name and phone-number from the phonebook
    */

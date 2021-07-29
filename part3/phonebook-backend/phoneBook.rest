@@ -1,7 +1,4 @@
-DELETE http://localhost:3001/api/persons/3
-
-###
-POST http://localhost:3001/api/persons
+POST https://damp-ridge-84274.herokuapp.com/api/persons
 content-type: application/json
 
 {
@@ -19,9 +16,5 @@ content-type: application/json
 }
 
 ###
-POST http://localhost:3001/api/persons
+DELETE http://localhost:3001/api/persons/60f09c9ae634dd06441ecdc3
 content-type: application/json
-
-{
-
-}

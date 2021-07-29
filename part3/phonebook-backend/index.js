@@ -1,126 +1,129 @@
-const { json } = require('express');
+require('dotenv').config();
 const express = require('express'); // same as import express from 'express';
 const morgan = require('morgan');
-const app = express(); // executing express() 
+
+const app = express(); // executing express()
 const cors = require('cors');
+const Person = require('./models/person.js');
 
 app.use(cors());
+app.use(express.static('build'));
+app.use(express.json());
 
-let phonebook = [
-    { 
-      "name": "Arto Hellas", 
-      "number": "040-123456",
-      "id": 1
-    },
-    { 
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523",
-      "id": 2
-    },
-    { 
-      "name": "Dan Abramov", 
-      "number": "12-43-234345",
-      "id": 3
-    },
-    { 
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122",
-      "id": 4
-    }
-]
+morgan.token('postBody', (req, res) => JSON.stringify(req.body));
 
-app.use(express.json()); 
-
-morgan.token('postBody',(req, res) => {
-  return JSON.stringify(req.body);
-})
-
-const bodyLog = morgan(function (tokens, req, res) {
-  return [
-    tokens.method(req, res),
-    tokens.url(req, res),
-    tokens.status(req, res),
-    tokens.res(req, res, 'content-length'), '-',
-    tokens['response-time'](req, res), 'ms',
-    tokens['postBody'](req, res)
-  ].join(' ')
-})
+const bodyLog = morgan((tokens, req, res) => [
+  tokens.method(req, res),
+  tokens.url(req, res),
+  tokens.status(req, res),
+  tokens.res(req, res, 'content-length'), '-',
+  tokens['response-time'](req, res), 'ms',
+  tokens.postBody(req, res),
+].join(' '));
 
 app.use(bodyLog);
 
+app.get('/', (request, response) => {
+  response.send('<p>Hello</p>');
+});
+
 app.get('/api/persons', (request, response) => {
-    response.json(phonebook);
-})
+  Person.find({}).then((result) => {
+    response.json(result);
+  });
+});
 
-app.get('/info', (req, res) => {
-    const totalPeople = phonebook.length;
-    res.send(`<p>phone book has ${totalPeople} people</p>
-    <p>${new Date}</p>`);
-})
+app.get('/info', (request, response) => {
+  Person.find({})
+    .then((people) => {
+      response.send(`<p>phone book has ${people.length} people</p> 
+      <p>${new Date()}</p>`);
+    });
+});
 
-app.get('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id);
-
-    const person = phonebook.find(person => person.id === id);
-
-    person? res.json(person): res.status(404).end();
-})
-
-app.delete('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id);
-    phonebook = phonebook.filter(person => person.id !== id);
-
-    res.status(204).end();
-})
-
-
-app.post('/api/persons', (req, res) => {
-  const body = req.body;
-
-  const person = phonebook.find(person => person.name === body.name);
-
-
-  if(person !== undefined)
-  {
-    if(body.name === undefined || body.number === undefined)
-    {
-      // http 400 is bad response 
-      return res.status(400).json({"name": "name is missing", "number": "number is missing"});
+app.get('/api/persons/:id', (request, response) => {
+  // search data base by id using the method findById from mongoose
+  Person.findById(request.params.id).then((personID) => {
+    if (personID) {
+      console.log('successful in getting id');
+      response.json(personID);
+    } else {
+      response.status(404).end();
     }
+  });
+});
 
-    if(body.name.length < 0 || body.number.length < 0)
-    {
-      return res.status(400).json({"name": "name is missing", "number": "number is missing"});
-    }
-  
-    if(person.name === body.name)
-    {
-      return res.status(400).json({"name": "name exist in the phonebook"});
-    }
+// route to specific id
+app.put('/api/persons/:id', (request, response, next) => {
+  const { body } = request;
 
-  }
-  
-  let maxID = Math.max(...phonebook.map(person => person.id));
-  
   const personInfo = {
-    "name": body.name,
-    "number": body.number,
-    "id": ++maxID
+    name: body.name,
+    number: body.number,
+  };
+
+  Person.findByIdAndUpdate(request.params.id, personInfo, { new: true })
+    .then((updatedNote) => {
+      response.json(updatedNote);
+    })
+    .catch((error) => next(error));
+});
+
+app.delete('/api/persons/:id', (request, response, next) => {
+  Person.findByIdAndRemove(request.params.id)
+    .then((result) => {
+      response.status(204).end();
+    })
+    .catch((error) => next(error));
+});
+
+/**
+ * Add new person object to the phonebook
+ */
+app.post('/api/persons', (request, response, next) => {
+  const { body } = request;
+
+  if (body.name === undefined || body.number === undefined) {
+    // http 400 is bad response
+    return res.status(400).json({ name: 'name is missing', number: 'number is missing' });
   }
 
-  phonebook = phonebook.concat(personInfo);
+  const personInfo = new Person({
+    name: body.name,
+    number: body.number,
+  });
 
-  res.json(phonebook);
-})
+  personInfo.save()
+    .then((savedInfo) => savedInfo.toJSON())
+    .then((savedAndFormattedPerson) => {
+      response.json(savedAndFormattedPerson);
+    })
+    .catch((error) => next(error));
+});
 
-// unknown route 
+// unknown route
 const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: 'unknown endpoint' })
-}
+  response.status(404).send({ error: 'unknown endpoint' });
+};
+app.use(unknownEndpoint);
 
-app.use(unknownEndpoint)
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+  console.log(error.name);
 
-const PORT = process.env.PORT || 3001;
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' });
+  }
+  if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message });
+  }
+
+  next(error);
+};
+// this has to be the last loaded middleware.
+app.use(errorHandler);
+
+const { PORT } = process.env;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-})
+});
