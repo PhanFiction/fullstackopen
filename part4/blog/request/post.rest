@@ -1,0 +1,10 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImF1dGgiOiJST0xFX0FETUlOLFJPTEVfVVNFUiIsImV4cCI6MTQ2Nzc3MzQ5Nn0.v0Gfc9fKDQfkDningjmObkD5-EcbfWy5vuvuOimTV032iCoOaaQtCsZxQC78JbLbeQNLUA3UaQnuLgvwwqLmIg
+
+{
+    "title": "Test an app",
+    "author": "Johnny Dep",
+    "url": "https://steam.com/",
+    "likes": 55
+}

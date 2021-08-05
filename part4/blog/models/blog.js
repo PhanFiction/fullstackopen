@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// mongoose Schema document type and also to hold user object ID of the blog
 const blogSchema = new mongoose.Schema({
   title : {
     type: String,
@@ -16,6 +17,10 @@ const blogSchema = new mongoose.Schema({
   likes: {
     type: Number,
     default: 0
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   }
 });
 
