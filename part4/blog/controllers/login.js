@@ -26,14 +26,17 @@ loginRouter.post('/', async (request, response) => {
     
   
   // create obj that has username and user ID
-  // sign the userForToken obj we created to have the SECRET token for user to be able to do things on the website
   const userForToken = {
     username: user.username,
     id: user._id,
   }
-  
+
+  // sign the userForToken obj we created to have the SECRET token for user to be able to do things on the website
   const token = jwt.sign(userForToken, process.env.SECRET);
 
+  // sends the token as this type => xxxxx.yyyyy.zzzzz and username and name
+  // This can be seen in login.rest 
+  // Good to have if you want to display username or name if user logs in successfully
     response
       .status(200)
       .send({token, username: user.username, name: user.name})

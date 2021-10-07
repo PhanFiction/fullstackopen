@@ -1,6 +1,5 @@
 const blogsRouter = require('express').Router();
 const Blog = require('../models/blog.js');
-const User = require('../models/user.js');
 const jwt = require('jsonwebtoken');
 
 // fetch items from the home page
@@ -24,30 +23,24 @@ blogsRouter.get('/:id', async (request, response) => {
   }
 })
 
-const getTokenFrom = request => {
-  const authorization = request.get('authorization')
-  if (authorization && authorization.toLowerCase().startsWith('bearer')) {
-    return authorization.substring(7)
-  }
-  return null
-}
 
 // request to post an item
 blogsRouter.post('/', async (request, response) => {
   //const blog = new Blog(request.body);
   const body = request.body;
-  const token =  getTokenFrom(request);
+  const token =  request.token;
 
-  console.log(token);
-  const decodedToken = jwt.verify(token, process.env.SECRET);
+/*   const decodedToken = jwt.verify(token, process.env.SECRET);
+
 
   if (!token || !decodedToken.id) 
   {
-    return response.status(401).json({ error: 'token missing or invalid' })
-  }
+    return response.status(401).send({ error: 'token missing or invalid' })
+  } */
 
-  const user = await User.findById(decodedToken.id);
-
+  // get user
+  const user = request.user;
+  //const user = await User.findById(decodedToken.id);
 
   const blog = new Blog({
     title: body.title,
@@ -62,8 +55,10 @@ blogsRouter.post('/', async (request, response) => {
     return response.status(400).send({error: "title or url is missing"});
   }
 
+  // save blog to create blog id
   const savedBlog = await blog.save();
 
+  // access User.blogs and save the blog id
   user.blogs = user.blogs.concat(savedBlog._id);
   await user.save();
 
@@ -74,8 +69,33 @@ blogsRouter.post('/', async (request, response) => {
 // delete an object from the database
 // get id parameter from the route
 blogsRouter.delete('/:id', async (request, response) => {
-  const id = await request.params.id; // get id from parameter
-  await Blog.findByIdAndRemove(id);
+
+  // get token from the parameter from the route 
+  const id = await request.params.id; // get id of blog from parameter
+  const blog = await Blog.findById(id); // find blog by the id
+
+  // fetch token of user when they login
+  const token = await request.token;
+
+  // verify token
+  const decryptedToken = jwt.verify(token, process.env.SECRET);
+
+  // send 401 (unauthorized) if token or decrypted token is not valid
+  if(!token && !decryptedToken)
+  {
+    return response.status(401).json({ error: 'token missing or invalid' });
+  }
+
+  // compare blog user id owner with decrypted user id
+  if(blog.user.toString() === decryptedToken.id)
+  {
+    // delete blog if match
+    await Blog.findByIdAndRemove(id)
+    response.status(204).end();
+  }else{
+    return response.status(401).toJSON({error: "Unauthorized to delete this blog"});
+  }
+
   response.status(204).end(); // return http and end response
 })
 

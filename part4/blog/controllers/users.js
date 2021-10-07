@@ -1,12 +1,12 @@
 const bcrypt = require('bcrypt');
-const userRouter = require('express').Router(); // no need to define longer wat to endpoint
+const userRouter = require('express').Router(); // no need to define longer path to endpoint
 const User = require('../models/user.js'); // used to create Schema
 
 // For client wanting to create an account
 userRouter.post('/', async(request, response) => {
     const body = request.body;
 
-    let saltRounds = 10;
+    const saltRounds = 10;
 
     const passwordHash = await bcrypt.hash(body.password, saltRounds);
 

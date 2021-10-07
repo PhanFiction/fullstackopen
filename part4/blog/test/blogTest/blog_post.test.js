@@ -38,7 +38,7 @@ describe('new blog', () => {
 
         const loginUser = {
             username: 'test',
-            password: 'password'
+            password: 'password',
         }
 
         const loggedUser = await api
@@ -162,16 +162,42 @@ describe('delete blog', () => {
 
     test('deletes a blog in the database', async () => {
 
-        const blogAtStart = await helper.blogsInDb(); // get blogs from the database that will contain the ID
+        const user = {
+            username: "test",
+            password: "password",
+        }
 
-        const deleteBlog = blogAtStart[0];
+        // user logs in
+        const loggedUser = await api
+            .post('/api/login')
+            .send(user)
+            .expect('Content-Type', /application\/json/)
 
+        // new blog
+        const newBlog = {
+            title: 'Pokemon',
+            author: 'Ash Ketchum',
+            url: 'https://steam.com/',
+            likes: 100
+        }
+
+        // post blog
+        const userPost = await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .set('Authorization', `bearer ${loggedUser.body.token}`)
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
+
+        // delete blog
         await api
-            .delete(`/api/blogs/${deleteBlog.id}`)
+            .delete(`/api/blogs/${userPost.body.id}`) // delete blog
+            .set('Authorization', `bearer ${loggedUser.body.token}`) // give authorization to delete
             .expect(204)
 
         const blogAfterMath =  await helper.blogsInDb();
-        expect(blogAfterMath).toHaveLength(helper.initialBlogs.length-1);
+        expect(blogAfterMath).toHaveLength(3);
     })
 })
 
