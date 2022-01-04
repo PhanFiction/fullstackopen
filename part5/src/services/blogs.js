@@ -1,15 +1,15 @@
 import axios from 'axios'
-const baseUrl = 'http://localhost:3003/api/blogs'; // replace with PROCESS.ENV in the future
-let token = null;
+const baseUrl = 'http://localhost:3003/api/blogs' // replace with PROCESS.ENV in the future
+let token = null
 
 // create token
 const setToken = newToken => {
-  token = `bearer ${newToken}`;
+  token = `bearer ${newToken}`
 }
 
 const getAll = () => {
   const config = {
-    headers: {Authorization: token}
+    headers: { Authorization: token }
   }
 
   const request = axios.get(baseUrl, config)
@@ -18,10 +18,10 @@ const getAll = () => {
 
 const createBlog = async (newObj) => {
   const config = {
-    headers: {Authorization: token}
+    headers: { Authorization: token }
   }
-  const response = await axios.post(baseUrl, newObj, config);
-  return response.data;
+  const response = await axios.post(baseUrl, newObj, config)
+  return response.data
 }
 
 const update = (id, newObject) => {
@@ -29,4 +29,12 @@ const update = (id, newObject) => {
   return request.then(response => response.data)
 }
 
-export default { getAll, createBlog, update, setToken}
+const deleteBlog = (id) => {
+  const config = {
+    headers: { Authorization: token }
+  }
+  const request = axios.delete(`${baseUrl}/${id}`, config);
+  return request.data;
+}
+
+export default { getAll, createBlog, update, setToken, deleteBlog }

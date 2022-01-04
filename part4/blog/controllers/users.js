@@ -26,7 +26,7 @@ userRouter.post('/', async(request, response) => {
 userRouter.get('/', async(request, response) => {
     // in SQL, we can use the join query to join content from other collections in the database
     // in mongoose its not possible but instead we can use the .populate() method that can reference other documents in other collections
-    const users = await User.find({}).populate('user', {username: 1, user: 1}); // return to us the users and the blogs they posted by getting the user id in the blogs
+    const users = await User.find({}).populate('user', {username: 1, name: 1}); // return to us the users and the blogs they posted by getting the user id in the blogs
 
     // if we want we can also make selection of what we want to fetch from the database
     // return users with blogs but the object holds only {title and likes}

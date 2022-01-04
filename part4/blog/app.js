@@ -5,6 +5,7 @@ const app = express();
 const blogsRouter = require('./controllers/blogs.js');
 const usersRouter = require('./controllers/users.js');
 const loginRouter = require('./controllers/login.js');
+const testRouter = require('./controllers/test.js');
 const middleware = require('./utils/middleware.js');
 const logger = require('./utils/logger.js');
 const mongoose = require('mongoose');
@@ -33,6 +34,10 @@ app.use('/api/users', usersRouter);
 app.use('/api/login', loginRouter);
 app.use('/api/blogs', middleware.userExtractor, blogsRouter); // route to blogs
 
+if (process.env.NODE_ENV === 'test') {
+  const testRouter = require('./controllers/test')
+  app.use('/api/testing', testRouter)
+}
 // middleware of unknown enpoint of error
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);

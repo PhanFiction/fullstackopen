@@ -95,8 +95,8 @@ blogsRouter.delete('/:id', async (request, response) => {
   }else{
     return response.status(401).toJSON({error: "Unauthorized to delete this blog"});
   }
-
-  response.status(204).end(); // return http and end response
+  
+  //response.status(204).end(); // return http and end response
 })
 
 

@@ -3,6 +3,15 @@
   flex-direction: column;
 }
 
-button {
-  width: 10%;
+.blogStyle {
+  padding-top: 10px;
+  padding-left: 5px;
+  border: solid;
+  border-width: 1px;
+  margin-bottom: 5px;
+}
+
+.buttonStyles {
+  display: "flex";
+  flex-direction: "column";
 }

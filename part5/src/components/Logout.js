@@ -1,17 +1,18 @@
-import React from 'react';
+import React from 'react'
 
-export default function Logout({children})
+export default function Logout({ setUser, children })
 {
-    const handleLogout = () => {
-        window.localStorage.removeItem('loggedUser');
-    }
+  const handleLogout = () => {
+    setUser(null)
+    window.localStorage.removeItem('loggedUser')
+  }
 
-    return(
-        <div>
-            {children}
-            <button onClick={handleLogout}>
+  return(
+    <div>
+      {children}
+      <button onClick={handleLogout}>
                 logout
-            </button>
-        </div>
-    )
+      </button>
+    </div>
+  )
 }
