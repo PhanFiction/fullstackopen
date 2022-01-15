@@ -1,0 +1,41 @@
+{
+  "anecdotes": [
+    {
+      "0": "q",
+      "1": "w",
+      "2": "e",
+      "votes": null,
+      "id": "L6dYDSV"
+    },
+    {
+      "content": "qwe",
+      "votes": 0,
+      "id": "dZH75c1"
+    },
+    {
+      "content": "qweqwe",
+      "votes": 0,
+      "id": "4iMRs-K"
+    },
+    {
+      "0": "h",
+      "1": "e",
+      "2": "l",
+      "3": "l",
+      "4": "o",
+      "5": " ",
+      "6": "w",
+      "7": "o",
+      "8": "r",
+      "9": "l",
+      "10": "d",
+      "votes": null,
+      "id": "23SLp1P"
+    },
+    {
+      "content": "hello world",
+      "votes": 0,
+      "id": "XbcQ3H9"
+    }
+  ]
+}
