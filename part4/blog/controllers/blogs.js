@@ -3,7 +3,7 @@ const Blog = require('../models/blog.js');
 const jwt = require('jsonwebtoken');
 
 // fetch items from the home page
-blogsRouter.get('/', (request, response) => {
+blogsRouter.get('/', async (request, response) => {
   Blog
     .find({}).populate('user', {username: 1, user: 1})
     .then(blogs => {
@@ -13,7 +13,7 @@ blogsRouter.get('/', (request, response) => {
 
 // display the info of a single id blog
 blogsRouter.get('/:id', async (request, response) => {
-  blog = await Blog.findById(request.params.id);
+  const blog = await Blog.findById(request.params.id);
 
   if(blog)
   {

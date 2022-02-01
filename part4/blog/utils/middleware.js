@@ -30,8 +30,11 @@ const tokenExtractor = (request, response, next) => {
 // verify is user has token
 const userExtractor = async (request, response, next) => {
   const token = getTokenFrom(request);
-  const decodedToken = jwt.verify(token, process.env.SECRET);
-  request.user = await User.findById(decodedToken.id);
+  //console.log('token ', token);
+  if(token !== null){
+    const decodedToken = jwt.verify(token, process.env.SECRET);
+    request.user = await User.findById(decodedToken.id);
+  }
   next();
 }
 
