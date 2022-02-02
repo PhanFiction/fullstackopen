@@ -30,13 +30,13 @@ blogsRouter.post('/', async (request, response) => {
   const body = request.body;
   const token =  request.token;
 
-/*   const decodedToken = jwt.verify(token, process.env.SECRET);
+  const decodedToken = jwt.verify(token, process.env.SECRET);
 
 
   if (!token || !decodedToken.id) 
   {
     return response.status(401).send({ error: 'token missing or invalid' })
-  } */
+  }
 
   // get user
   const user = request.user;

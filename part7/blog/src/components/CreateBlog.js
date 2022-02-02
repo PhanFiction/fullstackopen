@@ -1,10 +1,13 @@
-import React from 'react'
-import './blog.css'
-import blogService from '../services/blogs'
-import PropTypes from 'prop-types'
+import React from 'react';
+import './blog.css';
+import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+import { createBlog } from '../reducer/blogReducer';
 
-export default function CreateBlog({ updateBlog, blogs })
+export default function CreateBlog()
 {
+  const dispatch = useDispatch();
+
   const [title, setTitle] = React.useState('')
   const [author, setAuthor] = React.useState('')
   const [url, setUrl] = React.useState('')
@@ -16,11 +19,7 @@ export default function CreateBlog({ updateBlog, blogs })
       author: author,
       url: url,
     }
-    let savedBlog= await blogService.createBlog(newBlog)
-    // update blog object
-    updateBlog(blogs.concat(savedBlog));
-
-    //console.log(savedBlog);
+    dispatch(createBlog(newBlog));
   }
 
   return(

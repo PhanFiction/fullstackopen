@@ -1,11 +1,11 @@
 import React from 'react'
 import './blog.css'
 import Toggable from './Toggable'
-import { useSelector } from 'react-redux';
+import { updateLike } from '../reducer/blogReducer'
+import { useDispatch } from 'react-redux'
 
-const Blog = ({ children }) => {
-
-  const blog = useSelector(state => state.blogs);
+const Blog = ({ blog, children }) => {
+  const dispatch = useDispatch();
 
   if(blog === null || blog === undefined){
     return(
@@ -18,20 +18,22 @@ const Blog = ({ children }) => {
   return(
     <div className="blogStyle">
       <span className="title">
-        {blog.title}
+        title {blog.title}
       </span>
       <Toggable buttonLabel={'view'}>
         <div>
           <span className="author">
-            {blog.author}
+            author {blog.author}
           </span>
+        </div>
+        <div>
           <span className="url">
-            {blog.url}
+            url {blog.url}
           </span>
         </div>
         <div className="buttonStyles">
-            likes 0
-          <button>likes</button>
+            likes {blog.likes}
+          <button onClick={()=>{dispatch(updateLike(blog))}}>likes</button>
         </div>
         {children}
       </Toggable>

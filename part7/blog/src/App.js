@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
-import { initializeNotes, createBlog } from './reducer/blogReducer';
+import { initializeBlogs, createBlog } from './reducer/blogReducer';
 import { fetchUser } from './reducer/authReducer';
 import { initializeUsers } from './reducer/userReducer';
 import Blog from './components/Blog'
@@ -16,11 +16,13 @@ import Notification from './components/Notification'
 // 1234
 
 const App = () => {
-  //const [user, setUser] = useState(null)
+
   const dispatch = useDispatch();
   const blogs = useSelector(state => state.blogs);
   const user = useSelector(state => state.user);
   const users = useSelector(state => state.users);
+
+  console.log(blogs);
 
   const createBlogRef = useRef()
 
@@ -29,12 +31,12 @@ const App = () => {
 
     dispatch(fetchUser());
     dispatch(initializeUsers());
-    dispatch(initializeNotes());
-  }, [])
+    dispatch(initializeBlogs());
+  }, []);
 
   const toggleCreateBlog = () => (
     <Toggable buttonLabel={'create new blog'} ref={createBlogRef}>
-      <CreateBlog updateBlog={dispatch(createBlog)} blogs={blogs}/>
+      <CreateBlog/>
     </Toggable>
   )
 
@@ -48,8 +50,8 @@ const App = () => {
       {toggleCreateBlog()}
       {blogs !== null ? 
         blogs.map(blog =>
-          <Blog key={blog.id}>
-            <DeleteButton id={blog.id} setBlogs={dispatch(createBlog)} blogs={blogs}/>
+          <Blog key={blog.id} blog={blog}>
+            <DeleteButton id={blog.id}/>
           </Blog>)
         : <h1>No blogs available</h1>
     }

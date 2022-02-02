@@ -17,7 +17,6 @@ const authReducer = (state=null, action) => {
 
 export const login = (username, password) => {
     return async dispatch => {
-
         try{
             const user = await loginService.login({username: username, password: password});
             window.localStorage.setItem('loggedUser', JSON.stringify(user));

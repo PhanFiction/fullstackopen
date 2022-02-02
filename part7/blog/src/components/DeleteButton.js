@@ -1,19 +1,15 @@
-import React from 'react'
-import blogService from '../services/blogs'
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { deleteBlog } from '../reducer/blogReducer';
 
-const DeleteButton = ( { id, blogs, setBlogs } ) => {
+const DeleteButton = ( { id } ) => {
+  const dispatch = useDispatch();
 
   const handleDelete = async (e) => {
     e.preventDefault()
 
     if(window.confirm('Do you really want to delete this blog?')){
-      try{
-        await blogService.deleteBlog(id);
-        console.log('Deleted sucessfully')
-        setBlogs(blogs.filter(blog => blog.id !== id)) // remove deleted blog from blogs
-      }catch(error){
-        console.log(error)
-      }
+      dispatch(deleteBlog(id));
     }
   }
   return(
